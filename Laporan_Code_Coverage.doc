@@ -1,0 +1,95 @@
+<html xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta charset="UTF-8">
+<title>Lampiran - Laporan Code Coverage Indo Ice Tea</title>
+<style>
+    body { font-family: 'Times New Roman', serif; font-size: 12pt; margin: 2cm; line-height: 1.5; text-align: justify; }
+    h1 { font-size: 14pt; text-align: center; font-weight: bold; margin-bottom: 20px; }
+    h2 { font-size: 12pt; font-weight: bold; margin-top: 25px; margin-bottom: 10px; }
+    p { margin-bottom: 12px; text-indent: 1cm; }
+    .no-indent { text-indent: 0; }
+    .screenshot-box { border: 2px dashed #666; padding: 15px; text-align: center; margin: 20px 0; background-color: #f9f9f9; min-height: 180px; }
+    .center { text-align: center; }
+    .page-break { page-break-before: always; }
+</style>
+</head>
+<body>
+
+<h1>LAMPIRAN</h1>
+<h1>LAPORAN CODE COVERAGE</h1>
+<p class="center no-indent"><strong>Aplikasi Indo Ice Tea - Laravel</strong></p>
+
+<h2>Sebelum Melakukan Testing</h2>
+
+<div class="screenshot-box">
+    <p class="no-indent"><strong>Screenshot 1 - Hasil Code Coverage Awal (Keseluruhan)</strong></p>
+    <br><br><br><br><br><br><br>
+</div>
+
+<p>Hasil awal code coverage pada aplikasi Indo Ice Tea menunjukkan tingkat pengujian yang masih sangat rendah. Berdasarkan hasil analisis, persentase lines yang tercakup hanya sebesar 0.00%, dengan total 0 dari 185 baris kode yang diuji. Sementara itu, pada kategori functions and methods, cakupan pengujian juga menunjukkan 0.00% atau sebanyak 0 dari 19 fungsi yang tercakup. Pada kategori classes and traits, cakupan pengujian tercatat sebesar 0.00%, yaitu 0 dari 6 class dan trait yang diuji.</p>
+
+<p>Kondisi ini menunjukkan bahwa sebelum dilakukan pengujian, aplikasi Indo Ice Tea belum memiliki satupun test case yang dieksekusi. Seluruh komponen aplikasi, baik Controllers, Models, maupun Providers, belum tercakup oleh pengujian otomatis sama sekali.</p>
+
+<p>Berdasarkan hasil tersebut, dapat disimpulkan bahwa fokus utama pengembangan pengujian perlu diarahkan pada seluruh kategori, terutama Http Controllers dan Models, karena kedua bagian tersebut memiliki peran penting dalam proses bisnis dan alur kerja aplikasi.</p>
+
+<div class="screenshot-box">
+    <p class="no-indent"><strong>Screenshot 2 - Hasil Code Coverage Awal (Models)</strong></p>
+    <br><br><br><br><br><br><br>
+</div>
+
+<p>Pada hasil code coverage awal pada bagian Model aplikasi Indo Ice Tea, diperoleh hasil bahwa seluruh model yang digunakan dalam sistem belum tercakup oleh pengujian. Pada kategori Models, persentase pengujian untuk lines, functions and methods, serta classes and traits menunjukkan nilai 0.00%, yang berarti tidak terdapat baris kode maupun fungsi pada model yang dieksekusi selama proses pengujian berlangsung.</p>
+
+<p>Model-model yang termasuk dalam kategori ini meliputi Admin.php, Menu.php, Pesanan.php, dan User.php. Seluruh model tersebut belum dilakukan pengujian unit sama sekali. Kondisi ini menunjukkan bahwa pengujian pada lapisan Model perlu dikembangkan, mengingat model berperan penting dalam pengelolaan data dan logika inti aplikasi.</p>
+
+<div class="screenshot-box">
+    <p class="no-indent"><strong>Screenshot 3 - Hasil Code Coverage Awal (Controllers)</strong></p>
+    <br><br><br><br><br><br><br>
+</div>
+
+<p>Pada hasil code coverage awal pada bagian Controllers aplikasi Indo Ice Tea, diperoleh bahwa seluruh controller belum memiliki cakupan pengujian. Secara keseluruhan, cakupan pengujian pada kategori Controllers menunjukkan 0.00% lines atau sebanyak 0 dari 185 baris kode yang tercakup. Pada kategori functions and methods, cakupan pengujian juga menunjukkan 0.00%, yaitu 0 dari 19 fungsi yang diuji. Sementara itu, pada kategori classes and traits, seluruh controller juga belum tercakup dengan persentase 0.00% (0 dari 6 class).</p>
+
+<p>Seluruh controller dalam aplikasi, meliputi AuthController.php, DashboardController.php, HomeController.php, MenuController.php, OrderController.php, dan StockController.php, menunjukkan cakupan 0.00% pada lines, functions and methods, serta classes and traits. Kondisi ini menunjukkan bahwa sebelum dilakukan pengujian, tidak ada satupun baris kode pada controller yang dieksekusi melalui proses testing.</p>
+
+<p>Hasil ini mengindikasikan bahwa pengujian pada lapisan Controller perlu segera dilakukan, mengingat controller merupakan bagian penting yang menangani seluruh request dan response dalam aplikasi.</p>
+
+<h2 class="page-break">Sesudah Melakukan Testing</h2>
+
+<div class="screenshot-box">
+    <p class="no-indent"><strong>Screenshot 4 - Hasil Code Coverage Sesudah Testing (Keseluruhan)</strong></p>
+    <br><br><br><br><br><br><br>
+</div>
+
+<p>Secara keseluruhan, setelah dilakukan proses testing menggunakan PHPUnit 11.5.47, hasil code coverage menunjukkan peningkatan yang signifikan. Aplikasi Indo Ice Tea kini memiliki cakupan pengujian sebesar 50.81% pada lines (94 dari 185 baris), 30.43% pada functions and methods (7 dari 23 fungsi), dan 11.11% pada classes and traits (1 dari 9 class).</p>
+
+<p>Kategori Providers telah mencapai cakupan pengujian 100% pada seluruh metrik (lines, functions and methods, dan classes and traits), yang menunjukkan bahwa service provider aplikasi telah diuji secara menyeluruh. Kategori Http Controllers menunjukkan peningkatan dengan cakupan 51.40% pada lines. Sementara itu, kategori Models masih menunjukkan cakupan 0.00% karena pengujian dilakukan melalui Feature Test pada controller.</p>
+
+<p>Hasil ini menunjukkan bahwa aplikasi telah memiliki dasar pengujian yang baik pada fitur-fitur utama setelah dilakukan penambahan test case.</p>
+
+<div class="screenshot-box">
+    <p class="no-indent"><strong>Screenshot 5 - Hasil Code Coverage Sesudah Testing (Controllers)</strong></p>
+    <br><br><br><br><br><br><br>
+</div>
+
+<p>Setelah dilakukan pengujian pada bagian Http Controllers, hasil code coverage menunjukkan peningkatan yang bervariasi antar controller. Secara keseluruhan, cakupan pengujian pada kategori Controllers meningkat dari 0.00% menjadi 51.14% pada lines (90 dari 176 baris), 26.32% pada functions and methods (5 dari 19 fungsi).</p>
+
+<p>Controller dengan cakupan tertinggi adalah StockController dengan 78.57% line coverage (11 dari 14 baris) dan 33.33% method coverage. OrderController menunjukkan cakupan 74.14% pada lines (43 dari 58 baris) dengan 25.00% method coverage. MenuController memiliki cakupan 72.92% pada lines (35 dari 48 baris) dengan 33.33% method coverage. HomeController memiliki cakupan 50.00% baik pada lines maupun methods.</p>
+
+<p>Namun, masih terdapat controller yang belum mendapatkan cakupan pengujian, yaitu AuthController dan DashboardController dengan 0.00% pada seluruh metrik. Hal ini menunjukkan bahwa pengujian pada sisi autentikasi dan dashboard masih perlu ditingkatkan pada tahap pengembangan selanjutnya.</p>
+
+<div class="screenshot-box">
+    <p class="no-indent"><strong>Screenshot 6 - Hasil Code Coverage Sesudah Testing (Models)</strong></p>
+    <br><br><br><br><br><br><br>
+</div>
+
+<p>Berdasarkan hasil pengujian pada bagian Models, cakupan pengujian masih menunjukkan 0.00% pada lines, functions and methods, serta classes and traits. Model-model yang terdapat dalam aplikasi Indo Ice Tea meliputi Admin.php, Menu.php, Pesanan.php, dan User.php.</p>
+
+<p>Kondisi ini terjadi karena pengujian yang dilakukan menggunakan Feature Test yang menguji alur fungsional aplikasi melalui HTTP request ke controller, sehingga eksekusi kode pada model tidak dicatat sebagai pengujian unit langsung pada level model. Dengan demikian, masih diperlukan penambahan Unit Test khusus untuk model agar seluruh lapisan aplikasi dapat diuji secara merata.</p>
+
+<h2>Kesimpulan</h2>
+
+<p>Berdasarkan hasil pengujian code coverage yang telah dilakukan pada aplikasi Indo Ice Tea, dapat disimpulkan bahwa terdapat peningkatan signifikan dari kondisi awal 0.00% menjadi 50.81% pada line coverage setelah dilakukan pengujian. Controller dengan fitur utama (MenuController, OrderController, StockController) telah memiliki cakupan yang baik dengan rata-rata di atas 70% line coverage. AuthController dan DashboardController masih memerlukan pengujian tambahan. Models belum memiliki unit test langsung dan perlu ditambahkan pengujian untuk meningkatkan keandalan sistem. Pengujian dilakukan menggunakan PHPUnit 11.5.47 dengan php-code-coverage 11.0.12 pada PHP 8.2.12.</p>
+
+</body>
+</html>
