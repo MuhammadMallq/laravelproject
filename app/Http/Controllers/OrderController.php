@@ -29,6 +29,11 @@ class OrderController extends Controller
         $statusBaru = $request->status_baru;
         $detailPesanan = $pesanan->detail_pesanan;
 
+        // Jika status tidak berubah, kembalikan saja
+        if ($statusLama == $statusBaru) {
+            return redirect()->back()->with('success', 'Status pesanan tidak berubah.');
+        }
+
         // Update status
         $pesanan->update(['status_pesanan' => $statusBaru]);
 
@@ -43,24 +48,22 @@ class OrderController extends Controller
                 $menu = Menu::where('nama_menu', $namaMenu)->first();
                 
                 if ($menu) {
-                    // Case A: Cancelled or reset (Selesai -> Batal/Baru)
-                    if ($statusLama == 'Selesai' && $statusBaru != 'Selesai') {
+                    // 1. Jika status berubah menjadi 'Selesai' (dari Baru/Batal)
+                    //    -> Kurangi Stok, Tambah Terjual
+                    if ($statusBaru == 'Selesai') {
+                        $menu->decrement('stok', $qty);
+                        $menu->increment('terjual', $qty);
+                    }
+                    
+                    // 2. Jika status berubah DARI 'Selesai' (ke Baru/Batal)
+                    //    -> Kembalikan Stok, Kurangi Terjual
+                    elseif ($statusLama == 'Selesai') {
+                        $menu->increment('stok', $qty);
                         $menu->decrement('terjual', $qty);
                     }
                     
-                    // Case B: Completed (Baru/Batal -> Selesai)
-                    elseif ($statusBaru == 'Selesai' && $statusLama != 'Selesai') {
-                        $menu->increment('terjual', $qty);
-                    }
-
-                    // Case C: Restock (Baru/Selesai -> Batal)
-                    if ($statusBaru == 'Batal' && $statusLama != 'Batal') {
-                        $menu->increment('stok', $qty);
-                    }
-                    // Case D: Cancel reverted (Batal -> Baru/Selesai)
-                    elseif ($statusLama == 'Batal' && $statusBaru != 'Batal') {
-                        $menu->decrement('stok', $qty);
-                    }
+                    // Catatan: Perubahan antara 'Baru' <-> 'Batal' tidak mempengaruhi stok
+                    // karena stok hanya berkurang saat 'Selesai'
                 }
             }
         }
@@ -72,18 +75,26 @@ class OrderController extends Controller
     {
         try {
             $data = $request->validate([
-                'detail' => 'required',
-                'total' => 'required',
-                'metode' => 'required',
-                'data_stok' => 'required|json'
+                'nama_pembeli' => 'required|string|max:255',
+                'no_telepon'   => 'required|string|max:20',
+                'detail'       => 'required',
+                'total'        => 'required',
+                'metode'       => 'required',
+                'data_stok'    => 'required|json'
             ]);
 
             $detail = $request->input('detail');
             $total = $request->input('total');
             $metode = $request->input('metode');
+            $namaPembeli = $request->input('nama_pembeli');
+            $noTelepon = $request->input('no_telepon');
             $dataStok = json_decode($request->input('data_stok'), true);
 
-            // Update stock for each item
+            // Note: Stok tidak dikurangi saat pemesanan status 'Baru'.
+            // Stok hanya berkurang saat status diupdate menjadi 'Selesai' oleh admin.
+            
+            /* 
+            // OLD LOGIC: Deduct stock immediately
             if (is_array($dataStok)) {
                 foreach ($dataStok as $item) {
                     $menu = Menu::where('nama_menu', $item['nama'])->first();
@@ -91,10 +102,13 @@ class OrderController extends Controller
                         $menu->decrement('stok', $item['jumlah']);
                     }
                 }
-            }
+            } 
+            */
 
             // Create new order
             Pesanan::create([
+                'nama_pembeli' => $namaPembeli,
+                'no_telepon' => $noTelepon,
                 'detail_pesanan' => $detail,
                 'total_harga' => $total,
                 'metode_pembayaran' => $metode,
@@ -112,7 +126,6 @@ class OrderController extends Controller
     {
         $order = Pesanan::findOrFail($id);
 
-        // Decrement 'terjual' if order was completed
         if ($order->status_pesanan == 'Selesai') {
             $items = explode(', ', $order->detail_pesanan);
             foreach ($items as $item) {
@@ -120,7 +133,11 @@ class OrderController extends Controller
                 if (preg_match('/^(.*?) \((\d+)x\)$/', $item, $matches)) {
                     $namaMenu = trim($matches[1]);
                     $qty = (int) $matches[2];
-                    Menu::where('nama_menu', $namaMenu)->decrement('terjual', $qty);
+                    $menu = Menu::where('nama_menu', $namaMenu)->first();
+                    if ($menu) {
+                        $menu->decrement('terjual', $qty);
+                        $menu->increment('stok', $qty); // Restore stock
+                    }
                 }
             }
         }

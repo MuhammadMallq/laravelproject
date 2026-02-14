@@ -18,7 +18,7 @@ use App\Http\Controllers\OrderController;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/menu', [MenuController::class, 'index'])->name('menu.index');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
-Route::post('/simpan-pesanan', [OrderController::class, 'store'])->name('order.store');
+Route::post('/simpan-pesanan', [OrderController::class, 'store'])->name('pesanan.store');
 
 // Auth Routes
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

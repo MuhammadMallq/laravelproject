@@ -118,7 +118,7 @@
 
             <div class="form-group">
                 <label>Harga (Rp)</label>
-                <input type="number" name="harga" value="{{ $menu->harga }}" required>
+                <input type="number" name="harga" value="{{ $menu->harga }}" min="0" required>
             </div>
 
             <div class="form-group">
