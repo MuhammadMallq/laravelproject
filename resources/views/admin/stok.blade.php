@@ -90,7 +90,7 @@
                 <td style="font-weight:600;">{{ $menu->nama_menu }}</td>
                 <td>Rp {{ number_format($menu->harga) }}</td>
                 <td>
-                    <input type="number" name="stok" form="update-form-{{ $menu->id }}" class="input-stok" value="{{ $menu->stok }}" style="{{ $stokAlert }}">
+                    <input type="number" name="stok" form="update-form-{{ $menu->id }}" class="input-stok" value="{{ $menu->stok }}" min="0" style="{{ $stokAlert }}">
                 </td>
                 <td>
                     <form id="update-form-{{ $menu->id }}" method="POST" action="{{ route('admin.stok.update') }}" style="display:inline-block">

@@ -213,13 +213,11 @@
             <div class="price-and-control">
                 <span class="price">Rp {{ number_format($menu->harga, 0, ',', '.') }}</span>
                 
-                @if(!$isAdmin)
                 <div class="quantity-control">
                     <button class="btn-minus">−</button>
                     <span class="quantity">0</span>
                     <button class="btn-plus">+</button>
                 </div>
-                @endif
             </div>
 
             @if($isAdmin)
@@ -242,6 +240,16 @@
     <div class="popup-content">
         <h3 class="popup-title">Konfirmasi Pesanan</h3>
         <div id="popup-items"></div>
+        
+        <!-- Input Nama & No Telp -->
+        <div style="margin-bottom:15px; text-align:left;">
+            <label for="buyer-name" style="display:block;margin-bottom:5px;font-weight:bold;">Nama Pembeli:</label>
+            <input type="text" id="buyer-name" placeholder="Masukkan Nama Anda" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:5px;margin-bottom:10px;">
+            
+            <label for="buyer-phone" style="display:block;margin-bottom:5px;font-weight:bold;">Nomor Telepon:</label>
+            <input type="text" id="buyer-phone" placeholder="Contoh: 08123456789" style="width:100%;padding:10px;border:1px solid #ddd;border-radius:5px;">
+        </div>
+
         <div class="total-price-area">
             Total Akhir: <span id="popup-total" style="color:var(--primary);">Rp 0</span>
         </div>
@@ -323,6 +331,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+function closeCheckoutPopup() {
+    document.getElementById('checkout-popup').style.display = 'none';
+}
+
 function showCheckoutPopup() {
     const popup = document.getElementById('checkout-popup');
     const popupItems = document.getElementById('popup-items');
@@ -340,20 +352,27 @@ function showCheckoutPopup() {
         }
     });
 
-    if (total === 0) return alert('Keranjang kosong!');
     popupItems.innerHTML = html;
     popupTotal.textContent = formatRupiah(total);
     popup.style.display = 'flex';
 }
 
-function closeCheckoutPopup() {
-    document.getElementById('checkout-popup').style.display = 'none';
-}
-
 function completeCheckout() {
+    const buyerName = document.getElementById('buyer-name').value;
+    const buyerPhone = document.getElementById('buyer-phone').value;
     const method = document.getElementById('payment-method').value;
     const totalRaw = document.getElementById('popup-total').textContent;
     const totalHarga = totalRaw.replace(/\D/g, '');
+    
+    // Validation
+    if (!buyerName) {
+        alert('Mohon isi Nama Pembeli');
+        return;
+    }
+    if (!buyerPhone) {
+        alert('Mohon isi Nomor Telepon');
+        return;
+    }
     
     let detailPesan = '', pesanWA = '*PESANAN BARU - INDO ICE TEA*%0A', dataStok = [];
     
@@ -368,13 +387,15 @@ function completeCheckout() {
     });
 
     const formData = new FormData();
+    formData.append('nama_pembeli', buyerName);
+    formData.append('no_telepon', buyerPhone);
     formData.append('detail', detailPesan);
     formData.append('total', totalHarga);
     formData.append('metode', method);
     formData.append('data_stok', JSON.stringify(dataStok));
     formData.append('_token', '{{ csrf_token() }}');
 
-    fetch('{{ route("order.store") }}', { 
+    fetch('{{ route("pesanan.store") }}', { 
         method: 'POST', 
         body: formData,
         headers: {
@@ -387,8 +408,13 @@ function completeCheckout() {
     })
     .then(data => {
         const nomorWA = "6282122339125";
-        window.open(`https://wa.me/${nomorWA}?text=${pesanWA}%0ATotal: ${totalRaw}%0AMetode: ${method}`, '_blank');
+        window.open(`https://wa.me/${nomorWA}?text=${pesanWA}%0ATotal: ${totalRaw}%0AMetode: ${method}%0ANama: ${buyerName}%0ANo Telp: ${buyerPhone}`, '_blank');
+        
+        // Reset Inputs
+        document.getElementById('buyer-name').value = '';
+        document.getElementById('buyer-phone').value = '';
         document.querySelectorAll('.menu-item .quantity').forEach(q => q.textContent = '0');
+        
         updateOrderTotal();
         closeCheckoutPopup();
         alert('Pesanan berhasil dibuat!');

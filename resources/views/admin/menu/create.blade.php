@@ -107,12 +107,12 @@
 
             <div class="form-group">
                 <label>Harga (Rp)</label>
-                <input type="number" name="harga" placeholder="Contoh: 10000" required>
+                <input type="number" name="harga" placeholder="Contoh: 10000" min="0" required>
             </div>
 
             <div class="form-group">
                 <label>Stok Awal</label>
-                <input type="number" name="stok" placeholder="Contoh: 50" value="0">
+                <input type="number" name="stok" placeholder="Contoh: 50" value="0" min="0">
             </div>
 
             <div class="form-group">

@@ -348,7 +348,12 @@
                         <li><a href="{{ route('home') }}">Beranda</a></li>
                         <li><a href="{{ route('menu.index') }}">Menu Minuman</a></li>
                         <li><a href="{{ route('contact') }}">Hubungi Kami</a></li>
-                        <li><a href="{{ route('login') }}">Admin Panel</a></li>
+                        @if(session('admin'))
+                        <li><a href="{{ route('logout') }}" style="color:#e74c3c;">Logout (Admin)</a></li>
+                        <li><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                        @else
+                        <li><a href="{{ route('login') }}">Admin Login</a></li>
+                        @endif
                     </ul>
                 </div>
 
