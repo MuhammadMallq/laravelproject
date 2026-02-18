@@ -239,6 +239,33 @@
     .complete-btn { background: var(--primary); color: white; border: none; padding: 16px; border-radius: 15px; font-weight: 700; width: 100%; cursor: pointer; font-size: 1rem; }
     .complete-btn:hover { background: var(--primary-dark); }
     .close-popup-btn { background: none; border: none; color: #bbb; margin-top: 15px; cursor: pointer; }
+
+    /* Toast Notification */
+    .toast-notification {
+        position: fixed;
+        top: 30px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-120px);
+        padding: 16px 30px;
+        border-radius: 16px;
+        color: white;
+        font-weight: 600;
+        font-size: 0.95rem;
+        z-index: 99999;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        transition: transform 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.4s ease;
+        opacity: 0;
+        pointer-events: none;
+        max-width: 90%;
+        text-align: center;
+    }
+    .toast-notification.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+    }
+    .toast-success { background: linear-gradient(135deg, #27ae60, #2ecc71); }
+    .toast-error { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+    .toast-warning { background: linear-gradient(135deg, #e67e22, #f39c12); }
 </style>
 @endpush
 
@@ -339,10 +366,23 @@
     </div>
     <span id="floating-cart-total" style="font-weight:700; color:var(--primary);">Rp 0</span>
 </div>
+
+<!-- Toast Notification -->
+<div id="toast-notification" class="toast-notification"></div>
 @endsection
 
 @push('scripts')
 <script>
+function showToast(message, type = 'warning') {
+    const toast = document.getElementById('toast-notification');
+    toast.className = `toast-notification toast-${type}`;
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 2500);
+}
+
 function formatRupiah(angka) {
     const reverse = angka.toString().split('').reverse().join('');
     const ribuan = reverse.match(/\d{1,3}/g);
@@ -411,7 +451,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (isNaN(val) || val < 0) val = 0;
                 if (val > maxStok) {
                     val = maxStok;
-                    alert(`Stok tersedia hanya ${maxStok}`);
+                    showToast('Jumlah melebihi stok yang tersedia!', 'warning');
                 }
                 qtyInput.value = val;
                 updateButtons();
@@ -526,11 +566,11 @@ function completeCheckout() {
         
         updateOrderTotal();
         closeCheckoutPopup();
-        alert('Pesanan berhasil dibuat!');
+        showToast('Pesanan berhasil dibuat! 🎉', 'success');
     })
     .catch(error => {
         console.error('Error:', error);
-        alert('Gagal membuat pesanan. Silakan coba lagi.');
+        showToast('Gagal membuat pesanan. Silakan coba lagi.', 'error');
     });
 }
 </script>
