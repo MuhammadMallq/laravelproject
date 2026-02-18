@@ -10,5 +10,5 @@ return [
     | The model should have 'stok' (integer) and 'gambar' (string) attributes.
     |
     */
-    'model' => App\Models\Menu::class,
+    'model' => 'App\\Models\\Menu',
 ];

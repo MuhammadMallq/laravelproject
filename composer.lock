@@ -4,8 +4,68 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c514d8f7b9fc5970bdd94287905ef584",
+    "content-hash": "23f9a4c92d1278a1410aa0a808f188c5",
     "packages": [
+        {
+            "name": "ameringkseh/stock-management",
+            "version": "v1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Ameringkseh/stock-management.git",
+                "reference": "8a8e00ae69ee820233dedd22fde227644dce149e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Ameringkseh/stock-management/zipball/8a8e00ae69ee820233dedd22fde227644dce149e",
+                "reference": "8a8e00ae69ee820233dedd22fde227644dce149e",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "^10.0|^11.0|^12.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^8.0|^9.0",
+                "phpunit/phpunit": "^10.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Ameringkseh\\StockManagement\\StockManagementServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Ameringkseh\\StockManagement\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Ameringkseh",
+                    "email": "user@example.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A robust Stock Management module for Laravel applications.",
+            "homepage": "https://github.com/Ameringkseh/stock-management",
+            "keywords": [
+                "inventory",
+                "laravel",
+                "management",
+                "stock"
+            ],
+            "support": {
+                "issues": "https://github.com/Ameringkseh/stock-management/issues",
+                "source": "https://github.com/Ameringkseh/stock-management"
+            },
+            "time": "2026-02-16T13:46:25+00:00"
+        },
         {
             "name": "brick/math",
             "version": "0.14.1",
