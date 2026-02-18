@@ -121,13 +121,64 @@
         align-items: center;
     }
 
-    .quantity-control button:hover {
+    .quantity-control button:hover:not(:disabled) {
         background: var(--primary);
         color: white;
         border-color: var(--primary);
     }
 
-    .quantity { font-weight: 700; min-width: 25px; text-align: center; color: var(--dark); font-size: 1.1rem; }
+    .quantity-control button:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+        box-shadow: none;
+    }
+
+    .quantity-input {
+        font-weight: 700;
+        width: 45px;
+        text-align: center;
+        color: var(--dark);
+        font-size: 1.1rem;
+        border: none;
+        background: transparent;
+        outline: none;
+        -moz-appearance: textfield;
+    }
+    .quantity-input::-webkit-outer-spin-button,
+    .quantity-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Out of Stock */
+    .menu-item.out-of-stock {
+        opacity: 0.6;
+        pointer-events: none;
+        position: relative;
+    }
+    .menu-item.out-of-stock .quantity-control { display: none; }
+    .out-of-stock-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: #e74c3c;
+        color: white;
+        padding: 6px 16px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        z-index: 10;
+        letter-spacing: 0.5px;
+    }
+    .stock-info {
+        font-size: 0.75rem;
+        text-align: right;
+        margin-top: 4px;
+        font-weight: 600;
+    }
+    .stock-available { color: #27ae60; }
+    .stock-low { color: #e67e22; }
+    .stock-empty { color: #e74c3c; }
 
     .admin-controls {
         padding: 15px;
@@ -202,7 +253,10 @@
 
     <div class="menu-grid">
         @foreach($menus as $menu)
-        <div class="menu-item" data-name="{{ $menu->nama_menu }}" data-price="{{ $menu->harga }}">
+        <div class="menu-item {{ $menu->stok <= 0 ? 'out-of-stock' : '' }}" data-name="{{ $menu->nama_menu }}" data-price="{{ $menu->harga }}" data-stok="{{ $menu->stok }}">
+            @if($menu->stok <= 0)
+                <span class="out-of-stock-badge">HABIS</span>
+            @endif
             <div style="overflow:hidden">
                 <img src="{{ asset('img/' . $menu->gambar) }}" alt="{{ $menu->nama_menu }}" class="menu-img">
             </div>
@@ -211,12 +265,21 @@
                 <p>{{ $menu->deskripsi }}</p>
             </div>
             <div class="price-and-control">
-                <span class="price">Rp {{ number_format($menu->harga, 0, ',', '.') }}</span>
+                <div>
+                    <span class="price">Rp {{ number_format($menu->harga, 0, ',', '.') }}</span>
+                    @if($menu->stok > 5)
+                        <div class="stock-info stock-available">✔ Tersedia</div>
+                    @elseif($menu->stok > 0)
+                        <div class="stock-info stock-low">⚠ Hampir Habis!</div>
+                    @else
+                        <div class="stock-info stock-empty">✖ Habis</div>
+                    @endif
+                </div>
                 
                 <div class="quantity-control">
-                    <button class="btn-minus">−</button>
-                    <span class="quantity">0</span>
-                    <button class="btn-plus">+</button>
+                    <button class="btn-minus" disabled>−</button>
+                    <input type="number" class="quantity-input" value="0" min="0" max="{{ $menu->stok }}">
+                    <button class="btn-plus" {{ $menu->stok <= 0 ? 'disabled' : '' }}>+</button>
                 </div>
             </div>
 
@@ -294,8 +357,8 @@ function toggleQrisDisplay() {
 
 function updateOrderTotal() {
     let total = 0, totalItems = 0;
-    document.querySelectorAll('.menu-item').forEach(item => {
-        const qty = parseInt(item.querySelector('.quantity')?.textContent || 0);
+    document.querySelectorAll('.menu-item:not(.out-of-stock)').forEach(item => {
+        const qty = parseInt(item.querySelector('.quantity-input')?.value || 0);
         const price = parseInt(item.dataset.price);
         total += qty * price;
         totalItems += qty;
@@ -308,26 +371,63 @@ function updateOrderTotal() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.menu-item').forEach(item => {
+    document.querySelectorAll('.menu-item:not(.out-of-stock)').forEach(item => {
         const btnMinus = item.querySelector('.btn-minus');
         const btnPlus = item.querySelector('.btn-plus');
-        const qtyEl = item.querySelector('.quantity');
+        const qtyInput = item.querySelector('.quantity-input');
+        const maxStok = parseInt(item.dataset.stok) || 0;
+
+        function updateButtons() {
+            const qty = parseInt(qtyInput.value) || 0;
+            btnMinus.disabled = qty <= 0;
+            btnPlus.disabled = qty >= maxStok;
+        }
 
         if (btnPlus) {
             btnPlus.addEventListener('click', () => {
-                qtyEl.textContent = parseInt(qtyEl.textContent) + 1;
-                updateOrderTotal();
-            });
-        }
-        if (btnMinus) {
-            btnMinus.addEventListener('click', () => {
-                let qty = parseInt(qtyEl.textContent);
-                if (qty > 0) {
-                    qtyEl.textContent = qty - 1;
+                let qty = parseInt(qtyInput.value) || 0;
+                if (qty < maxStok) {
+                    qtyInput.value = qty + 1;
+                    updateButtons();
                     updateOrderTotal();
                 }
             });
         }
+        if (btnMinus) {
+            btnMinus.addEventListener('click', () => {
+                let qty = parseInt(qtyInput.value) || 0;
+                if (qty > 0) {
+                    qtyInput.value = qty - 1;
+                    updateButtons();
+                    updateOrderTotal();
+                }
+            });
+        }
+
+        // Allow user to type custom quantity
+        if (qtyInput) {
+            qtyInput.addEventListener('input', () => {
+                let val = parseInt(qtyInput.value);
+                if (isNaN(val) || val < 0) val = 0;
+                if (val > maxStok) {
+                    val = maxStok;
+                    alert(`Stok tersedia hanya ${maxStok}`);
+                }
+                qtyInput.value = val;
+                updateButtons();
+                updateOrderTotal();
+            });
+
+            qtyInput.addEventListener('blur', () => {
+                if (qtyInput.value === '' || isNaN(parseInt(qtyInput.value))) {
+                    qtyInput.value = 0;
+                    updateButtons();
+                    updateOrderTotal();
+                }
+            });
+        }
+
+        updateButtons(); // Set initial button states
     });
 });
 
@@ -341,8 +441,8 @@ function showCheckoutPopup() {
     const popupTotal = document.getElementById('popup-total');
     
     let total = 0, html = '';
-    document.querySelectorAll('.menu-item').forEach(item => {
-        const qty = parseInt(item.querySelector('.quantity')?.textContent || 0);
+    document.querySelectorAll('.menu-item:not(.out-of-stock)').forEach(item => {
+        const qty = parseInt(item.querySelector('.quantity-input')?.value || 0);
         if (qty > 0) {
             const name = item.dataset.name;
             const price = parseInt(item.dataset.price);
@@ -376,8 +476,8 @@ function completeCheckout() {
     
     let detailPesan = '', pesanWA = '*PESANAN BARU - INDO ICE TEA*%0A', dataStok = [];
     
-    document.querySelectorAll('.menu-item').forEach(item => {
-        const qty = parseInt(item.querySelector('.quantity')?.textContent || 0);
+    document.querySelectorAll('.menu-item:not(.out-of-stock)').forEach(item => {
+        const qty = parseInt(item.querySelector('.quantity-input')?.value || 0);
         if (qty > 0) {
             const nama = item.dataset.name;
             detailPesan += `${nama} (${qty}x), `;
@@ -413,7 +513,16 @@ function completeCheckout() {
         // Reset Inputs
         document.getElementById('buyer-name').value = '';
         document.getElementById('buyer-phone').value = '';
-        document.querySelectorAll('.menu-item .quantity').forEach(q => q.textContent = '0');
+        document.querySelectorAll('.menu-item .quantity-input').forEach(q => {
+            q.value = '0';
+            // Re-enable plus, disable minus after reset
+            const item = q.closest('.menu-item');
+            if (item) {
+                const maxStok = parseInt(item.dataset.stok) || 0;
+                item.querySelector('.btn-minus').disabled = true;
+                item.querySelector('.btn-plus').disabled = maxStok <= 0;
+            }
+        });
         
         updateOrderTotal();
         closeCheckoutPopup();
